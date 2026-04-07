@@ -1,0 +1,178 @@
+@model ReservaViewModel
+@{
+    ViewData["Title"] = "Reservar Quarto";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-4">
+                    <h2 class="mb-0 text-center">
+                        <i class="bi bi-calendar-plus"></i> Fazer Reserva
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Reservar" method="post" id="formReserva">
+                        @Html.AntiForgeryToken()
+                        
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                @Html.ValidationSummary(false)
+                            </div>
+                        }
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="NomeHospede" class="form-label"></label>
+                                <input asp-for="NomeHospede" class="form-control" placeholder="Nome completo">
+                                <span asp-validation-for="NomeHospede" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" placeholder="email@exemplo.com">
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Telefone" class="form-label"></label>
+                                <input asp-for="Telefone" class="form-control" placeholder="(00) 00000-0000">
+                                <span asp-validation-for="Telefone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NumeroHospedes" class="form-label"></label>
+                                <select asp-for="NumeroHospedes" class="form-select">
+                                    @for (int i = 1; i <= 4; i++)
+                                    {
+                                        <option value="@i">@i pessoa(s)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="NumeroHospedes" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DataEntrada" class="form-label"></label>
+                                <input asp-for="DataEntrada" class="form-control" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")">
+                                <span asp-validation-for="DataEntrada" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DataSaida" class="form-label"></label>
+                                <input asp-for="DataSaida" class="form-control" type="date" min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")">
+                                <span asp-validation-for="DataSaida" class="text-danger"></span>
+                            </div>
+                            <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="TipoQuarto" class="form-label"></label>
+                                <select asp-for="TipoQuarto" class="form-select" id="tipoQuarto">
+                                    <option value="">Selecione...</option>
+                                    <option value="Standard">Standard - R$ 199,90/noite</option>
+                                    <option value="Luxo">Luxo - R$ 399,90/noite</option>
+                                    <option value="Suite">Suíte Presidencial - R$ 999,90/noite</option>
+                                </select>
+                                <!-- Input hidden para garantir envio quando select estiver disabled -->
+                                <input type="hidden" id="tipoQuartoHidden" name="TipoQuarto" />
+                                <span asp-validation-for="TipoQuarto" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="TipoPacote" class="form-label"></label>
+                                <select asp-for="TipoPacote" class="form-select" id="tipoPacote">
+                                    <option value="">Sem pacote (apenas quarto)</option>
+                                    <option value="Standard" data-quarto="Standard">Standard (+café+spa)</option>
+                                    <option value="Negocios" data-quarto="Standard">Negócios (+café expresso+business)</option>
+                                    <option value="Romantico" data-quarto="Luxo">Romântico (+café romântico+jantar)</option>
+                                    <option value="Premium" data-quarto="Suite">Premium (+café premium+spa)</option>
+                                </select>
+                                <small class="text-muted">Ao selecionar pacote, o quarto é pré-definido</small>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Observacoes" class="form-label"></label>
+                                <textarea asp-for="Observacoes" class="form-control" rows="3" placeholder="Pedidos especiais, necessidades, etc."></textarea>
+                            </div>
+                        </div>
+
+                        <div id="resumoReserva" class="mt-4 p-3 bg-light rounded" style="display: none;">
+                            <h5><i class="bi bi-receipt"></i> Resumo da Reserva</h5>
+                            <div id="detalhesReserva"></div>
+                        </div>
+
+                        <div class="mt-4 d-grid gap-2">
+                            <button type="submit" class="btn btn-gold btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirmar Reserva
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Mapeamento de pacotes para quartos
+            var pacoteQuartos = {
+                'Standard': 'Standard',
+                'Negocios': 'Standard',
+                'Romantico': 'Luxo',
+                'Premium': 'Suite'
+            };
+
+            function atualizarQuartoPorPacote() {
+                var pacoteSelecionado = $('#tipoPacote').val();
+                
+                if (pacoteSelecionado) {
+                    // Com pacote: define o quarto automaticamente e desabilita
+                    var quartoDoPacote = pacoteQuartos[pacoteSelecionado];
+                    $('#tipoQuarto').val(quartoDoPacote).prop('disabled', true);
+                    $('#tipoQuartoHidden').val(quartoDoPacote); // Sincroniza hidden
+                } else {
+                    // Sem pacote: habilita seleção de quarto
+                    $('#tipoQuarto').prop('disabled', false);
+                    $('#tipoQuartoHidden').val($('#tipoQuarto').val()); // Sincroniza hidden
+                }
+            }
+
+            function atualizarResumo() {
+                var dataEntrada = $('#DataEntrada').val();
+                var dataSaida = $('#DataSaida').val();
+                var tipoQuarto = $('#tipoQuarto').val();
+                var tipoPacote = $('#tipoPacote').val();
+
+                if (dataEntrada && dataSaida && tipoQuarto) {
+                    $.get('/Home/CalcularPacote', {
+                        tipoQuarto: tipoQuarto,
+                        tipoPacote: tipoPacote || '',
+                        dataEntrada: dataEntrada,
+                        dataSaida: dataSaida
+                    }, function(response) {
+                        if (response.success) {
+                            var pacote = response.pacote;
+                            var html = '<div class="row">' +
+                                '<div class="col-md-6"><strong>Diárias:</strong> ' + pacote.diarias + '</div>' +
+                                '<div class="col-md-6"><strong>Quarto:</strong> ' + pacote.quartoTipo + '</div>' +
+                                '<div class="col-md-6"><strong>Café:</strong> ' + pacote.cafeNome + '</div>' +
+                                '<div class="col-md-6"><strong>Serviço:</strong> ' + pacote.servicoNome + '</div>' +
+                                '<div class="col-12 mt-3"><strong class="fs-4 text-success">Total: R$ ' + pacote.valorTotal.toFixed(2) + '</strong></div>' +
+                                '</div>';
+                            $('#detalhesReserva').html(html);
+                            $('#resumoReserva').show();
+                        }
+                    });
+                }
+            }
+
+            // Eventos
+            $('#tipoPacote').change(function() {
+                atualizarQuartoPorPacote();
+                atualizarResumo();
+            });
+
+            $('#tipoQuarto').change(atualizarResumo);
+            $('#DataEntrada, #DataSaida').change(atualizarResumo);
+
+            // Inicializar
+            atualizarQuartoPorPacote();
+        });
+    </script>
+}

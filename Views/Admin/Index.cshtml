@@ -1,0 +1,223 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard Administrativo";
+}
+
+<div class="container-fluid py-4">
+    <h2 class="fw-bold mb-4"><i class="bi bi-speedometer2"></i> Dashboard Administrativo</h2>
+
+    <!-- Estatísticas -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-check fs-1 text-primary"></i>
+                    <h3 class="mt-2 mb-0">@Model.Estatisticas["ReservasAtivas"]</h3>
+                    <p class="text-muted mb-0">Reservas Ativas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-hourglass-split fs-1 text-warning"></i>
+                    <h3 class="mt-2 mb-0">@Model.Estatisticas["ReservasPendentes"]</h3>
+                    <p class="text-muted mb-0">Pendentes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1 text-success"></i>
+                    <h3 class="mt-2 mb-0">@Model.Estatisticas["HospedesAtuais"]</h3>
+                    <p class="text-muted mb-0">Hóspedes Atuais</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock-history fs-1 text-info"></i>
+                    <h3 class="mt-2 mb-0">@Model.Estatisticas["TotalHistorico"]</h3>
+                    <p class="text-muted mb-0">Histórico</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Chegando Hoje -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Check-ins Hoje</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.ChegandoHoje.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Hóspede</th>
+                                        <th>Quarto</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in Model.ChegandoHoje)
+                                    {
+                                        <tr>
+                                            <td>@r.NomeHospede</td>
+                                            <td>@r.TipoQuarto</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success" onclick="checkIn('@r.Id')">
+                                                    <i class="bi bi-check"></i> Check-in
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Nenhum check-in previsto para hoje</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Saindo Hoje -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-box-arrow-right"></i> Check-outs Hoje</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.SaindoHoje.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Hóspede</th>
+                                        <th>Quarto</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in Model.SaindoHoje)
+                                    {
+                                        <tr>
+                                            <td>@r.NomeHospede</td>
+                                            <td>@r.TipoQuarto</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info" onclick="checkOut('@r.Id')">
+                                                    <i class="bi bi-check"></i> Check-out
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Nenhum check-out previsto para hoje</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservas Ativas -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-list-check"></i> Todas as Reservas Ativas</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.ReservasAtivas.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Hóspede</th>
+                                <th>Quarto</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Status</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.ReservasAtivas)
+                            {
+                                <tr>
+                                    <td><code>@r.Id.Substring(0, 8)...</code></td>
+                                    <td>@r.NomeHospede</td>
+                                    <td>@r.TipoQuarto</td>
+                                    <td>@r.DataEntrada.ToString("dd/MM")</td>
+                                    <td>@r.DataSaida.ToString("dd/MM")</td>
+                                    <td><span class="status-badge status-@r.Status.ToLower()">@r.Status</span></td>
+                                    <td>R$ @r.ValorTotal.ToString("N2")</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            @if (r.Status == "Confirmada")
+                                            {
+                                                <button class="btn btn-success" onclick="checkIn('@r.Id')" title="Check-in">
+                                                    <i class="bi bi-box-arrow-in-right"></i>
+                                                </button>
+                                            }
+                                            @if (r.Status == "CheckIn")
+                                            {
+                                                <button class="btn btn-info" onclick="checkOut('@r.Id')" title="Check-out">
+                                                    <i class="bi bi-box-arrow-right"></i>
+                                                </button>
+                                            }
+                                            <a class="btn btn-primary" asp-action="DetalhesReserva" asp-route-id="@r.Id" title="Detalhes">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">Nenhuma reserva ativa</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function checkIn(id) {
+            if (confirm('Confirmar check-in?')) {
+                $.post('/Admin/CheckIn', { id: id }, function(response) {
+                    if (response.success) location.reload();
+                    else alert(response.error || 'Erro ao realizar check-in');
+                });
+            }
+        }
+
+        function checkOut(id) {
+            if (confirm('Confirmar check-out?')) {
+                $.post('/Admin/CheckOut', { id: id }, function(response) {
+                    if (response.success) location.reload();
+                    else alert(response.error || 'Erro ao realizar check-out');
+                });
+            }
+        }
+    </script>
+}

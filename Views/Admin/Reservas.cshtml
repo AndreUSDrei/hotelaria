@@ -1,0 +1,101 @@
+@model List<ReservaInfo>
+@{
+    ViewData["Title"] = "Gerenciar Reservas";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-list-check"></i> Gerenciar Reservas</h2>
+        <a asp-controller="Home" asp-action="Reservar" class="btn btn-gold">
+            <i class="bi bi-plus"></i> Nova Reserva
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="tabelaReservas">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Hóspede</th>
+                            <th>Email</th>
+                            <th>Quarto</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                            <th>Status</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td><code>@r.Id.Substring(0, 8)...</code></td>
+                                <td>@r.NomeHospede</td>
+                                <td><small>@r.Email</small></td>
+                                <td>@r.TipoQuarto</td>
+                                <td>@r.DataEntrada.ToString("dd/MM/yyyy")</td>
+                                <td>@r.DataSaida.ToString("dd/MM/yyyy")</td>
+                                <td><span class="status-badge status-@r.Status.ToLower()">@r.Status</span></td>
+                                <td>R$ @r.ValorTotal.ToString("N2")</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        @if (r.Status == "Confirmada")
+                                        {
+                                            <button class="btn btn-success" onclick="checkIn('@r.Id')">
+                                                <i class="bi bi-box-arrow-in-right"></i>
+                                            </button>
+                                        }
+                                        @if (r.Status == "CheckIn")
+                                        {
+                                            <button class="btn btn-info" onclick="checkOut('@r.Id')">
+                                                <i class="bi bi-box-arrow-right"></i>
+                                            </button>
+                                        }
+                                        @if (r.Status != "Cancelada" && r.Status != "CheckOut")
+                                        {
+                                            <button class="btn btn-danger" onclick="cancelar('@r.Id')">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function checkIn(id) {
+            if (confirm('Confirmar check-in?')) {
+                $.post('/Admin/CheckIn', { id: id }, function(r) {
+                    if (r.success) location.reload();
+                    else alert(r.error);
+                });
+            }
+        }
+        function checkOut(id) {
+            if (confirm('Confirmar check-out?')) {
+                $.post('/Admin/CheckOut', { id: id }, function(r) {
+                    if (r.success) location.reload();
+                    else alert(r.error);
+                });
+            }
+        }
+        function cancelar(id) {
+            if (confirm('Cancelar reserva?')) {
+                $.post('/Admin/Cancelar', { id: id }, function(r) {
+                    if (r.success) location.reload();
+                    else alert('Erro ao cancelar');
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,95 @@
+@model DisponibilidadeViewModel
+@{
+    ViewData["Title"] = "Verificar Disponibilidade";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold"><i class="bi bi-calendar-check"></i> Verificar Disponibilidade</h1>
+        <p class="text-muted">Consulte a disponibilidade de quartos para suas datas</p>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label">Data de Entrada</label>
+                            <input type="date" id="dataEntrada" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Data de Saída</label>
+                            <input type="date" id="dataSaida" class="form-control" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" onclick="verificarDisponibilidade()">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="resultadoDisponibilidade" class="row g-4"></div>
+</div>
+
+@section Scripts {
+    <script>
+        function verificarDisponibilidade() {
+            var dataEntrada = $('#dataEntrada').val();
+            var dataSaida = $('#dataSaida').val();
+
+            if (!dataEntrada || !dataSaida) {
+                alert('Selecione as datas de entrada e saída');
+                return;
+            }
+
+            $.post('/Home/VerificarDisponibilidade', {
+                dataEntrada: dataEntrada,
+                dataSaida: dataSaida
+            }, function(response) {
+                if (response.success) {
+                    var html = '';
+                    response.quartos.forEach(function(quarto) {
+                        var disponivel = quarto.disponiveis > 0;
+                        var badgeClass = disponivel ? 'bg-success' : 'bg-danger';
+                        var btnClass = disponivel ? 'btn-gold' : 'btn-secondary disabled';
+                        
+                        html += '<div class="col-md-4">' +
+                            '<div class="card h-100">' +
+                            '<div class="card-header bg-primary text-white">' +
+                            '<h5 class="mb-0">' + quarto.tipo + '</h5>' +
+                            '</div>' +
+                            '<div class="card-body">' +
+                            '<p class="text-muted small">' + quarto.descricao + '</p>' +
+                            '<div class="d-flex justify-content-between mb-3">' +
+                            '<span class="badge ' + badgeClass + '">' + quarto.disponiveis + ' disponíveis</span>' +
+                            '<strong class="text-success">R$ ' + quarto.precoDiaria.toFixed(2) + '/noite</strong>' +
+                            '</div>' +
+                            '<h6>Comodidades:</h6>' +
+                            '<div class="d-flex flex-wrap gap-1">';
+                        
+                        quarto.comodidades.slice(0, 4).forEach(function(c) {
+                            html += '<span class="comodidade-tag">' + c + '</span>';
+                        });
+                        
+                        html += '</div></div>' +
+                            '<div class="card-footer bg-white border-0 p-3">' +
+                            '<a class="btn ' + btnClass + ' w-100" href="/Home/Reservar?tipo=' + quarto.tipo + '">' +
+                            '<i class="bi bi-calendar-plus"></i> Reservar</a>' +
+                            '</div></div></div>';
+                    });
+                    
+                    $('#resultadoDisponibilidade').html(html);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            verificarDisponibilidade();
+        });
+    </script>
+}

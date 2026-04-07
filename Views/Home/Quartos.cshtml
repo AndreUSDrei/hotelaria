@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Nossos Quartos";
+    var quartos = Model as IEnumerable<IQuarto>;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold"><i class="bi bi-door-open"></i> Nossos Quartos</h1>
+        <p class="text-muted">Conheça todas as opções de hospedagem disponíveis</p>
+    </div>
+
+    <div class="row g-4">
+        @if (quartos != null)
+        {
+            foreach (var quarto in quartos)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card card-quarto h-100">
+                        <div class="card-header text-center py-4">
+                            <div class="mb-2">
+                                @if (quarto.Tipo == "Suíte Presidencial")
+                                {
+                                    <i class="bi bi-gem fs-1"></i>
+                                }
+                                else if (quarto.Tipo == "Luxo")
+                                {
+                                    <i class="bi bi-star-fill fs-1"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-house fs-1"></i>
+                                }
+                            </div>
+                            <h3 class="mb-0">@quarto.Tipo</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@quarto.Descricao</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-4 py-3 border-top border-bottom">
+                                <div class="text-center">
+                                    <i class="bi bi-people-fill fs-4 text-primary"></i>
+                                    <p class="mb-0 small">Capacidade</p>
+                                    <strong>@quarto.Capacidade pessoas</strong>
+                                </div>
+                                <div class="text-center">
+                                    <span class="fs-3 fw-bold text-success">
+                                        R$ @quarto.PrecoDiaria.ToString("N2")
+                                    </span>
+                                    <p class="mb-0 small text-muted">por noite</p>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mb-3"><i class="bi bi-check-circle text-success"></i> Comodidades</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var comodidade in quarto.Comodidades)
+                                {
+                                    <span class="comodidade-tag">
+                                        <i class="bi bi-check2 text-success"></i> @comodidade
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-4">
+                            <a class="btn btn-gold w-100 btn-lg" asp-action="Reservar" asp-route-tipo="@quarto.Tipo">
+                                <i class="bi bi-calendar-plus"></i> Reservar Este Quarto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

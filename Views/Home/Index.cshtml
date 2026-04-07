@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Início";
+    var quartos = Model as IEnumerable<IQuarto>;
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class=></i> Bem-vindo ao Plaza Hotels
+        </h1>
+        <p class="lead mb-4">Experiência única em hospedagem com conforto e elegância</p>
+        <a class="btn btn-gold btn-lg" asp-action="Reservar">
+            <i class="bi bi-calendar-plus"></i> Faça sua Reserva
+        </a>
+    </div>
+</section>
+
+<!-- Quartos Section -->
+<section class="container">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Nossos Quartos</h2>
+        <p class="text-muted">Escolha o tipo de quarto ideal para sua estadia</p>
+    </div>
+    
+    <div class="row g-4">
+        @if (quartos != null)
+        {
+            foreach (var quarto in quartos)
+            {
+                <div class="col-md-4">
+                    <div class="card card-quarto h-100">
+                        <div class="card-header text-center py-3">
+                            <h4 class="mb-0">
+                                @if (quarto.Tipo == "Suíte Presidencial")
+                                {
+                                    <i class="bi bi-gem"></i>
+                                }
+                                else if (quarto.Tipo == "Luxo")
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-house"></i>
+                                }
+                                @quarto.Tipo
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text text-muted small">@quarto.Descricao</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-primary">@quarto.Capacidade pessoas</span>
+                                <span class="fs-4 fw-bold text-success">
+                                    R$ @quarto.PrecoDiaria.ToString("N2")<small class="text-muted">/noite</small>
+                                </span>
+                            </div>
+                            
+                            <h6 class="mt-3">Comodidades:</h6>
+                            <div class="d-flex flex-wrap">
+                                @foreach (var comodidade in quarto.Comodidades.Take(5))
+                                {
+                                    <span class="comodidade-tag">@comodidade</span>
+                                }
+                                @if (quarto.Comodidades.Count > 5)
+                                {
+                                    <span class="comodidade-tag text-muted">+@(quarto.Comodidades.Count - 5) mais</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-3">
+                            <a class="btn btn-gold w-100" asp-action="Reservar" asp-route-tipo="@quarto.Tipo">
+                                <i class="bi bi-bookmark-plus"></i> Reservar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+<!-- Padrões de Projeto Section -->
+<section class="container mt-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-1-circle-fill fs-1 text-primary"></i>
+                    </div>
+                    <h5>Singleton</h5>
+                    <p class="text-muted small mb-0">
+                        GerenciadorReservas garante instância única para controle centralizado de reservas e disponibilidade.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-2-circle-fill fs-1 text-success"></i>
+                    </div>
+                    <h5>Abstract Factory</h5>
+                    <p class="text-muted small mb-0">
+                        PacoteHospedagemFactory cria famílias de objetos relacionados: quarto, café da manhã e serviços.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-3-circle-fill fs-1 text-warning"></i>
+                    </div>
+                    <h5>Factory Method</h5>
+                    <p class="text-muted small mb-0">
+                        QuartoFactory cria objetos de tipos diferentes (Standard, Luxo, Suíte) através de uma interface comum.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

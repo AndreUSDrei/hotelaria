@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Pacotes de Hospedagem";
+    var pacotes = Model as IEnumerable<IPacoteHospedagemFactory>;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold"><i class="bi bi-gift"></i> Pacotes de Hospedagem</h1>
+        <p class="text-muted">Escolha o pacote completo ideal para sua estadia</p>
+    </div>
+
+    <div class="row g-4">
+        @if (pacotes != null)
+        {
+            foreach (var pacote in pacotes)
+            {
+                var quarto = pacote.CriarQuarto();
+                var cafe = pacote.CriarCafeDaManha();
+                var servico = pacote.CriarServico();
+                
+                <div class="col-lg-6">
+                    <div class="card card-quarto h-100">
+                        <div class="card-header text-center py-4">
+                            <h3 class="mb-0"><i class="bi bi-box-seam"></i> @pacote.NomePacote</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text text-muted">@pacote.DescricaoPacote</p>
+                            
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center h-100">
+                                        <i class="bi bi-door-open fs-3 text-primary"></i>
+                                        <h6 class="mt-2 mb-1">Quarto</h6>
+                                        <p class="small text-muted mb-0">@quarto.Tipo</p>
+                                        <strong class="text-success">R$ @quarto.PrecoDiaria.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center h-100">
+                                        <i class="bi bi-cup-hot fs-3 text-warning"></i>
+                                        <h6 class="mt-2 mb-1">Café da Manhã</h6>
+                                        <p class="small text-muted mb-0">@cafe.Nome</p>
+                                        <strong class="text-success">R$ @cafe.Preco.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center h-100">
+                                        <i class="bi bi-star fs-3 text-info"></i>
+                                        <h6 class="mt-2 mb-1">Serviço Extra</h6>
+                                        <p class="small text-muted mb-0">@servico.Nome</p>
+                                        <strong class="text-success">R$ @servico.Preco.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Valor base por diária:</span>
+                                    <strong class="fs-5 text-success">
+                                        R$ @((quarto.PrecoDiaria + cafe.Preco).ToString("N2"))
+                                    </strong>
+                                </div>
+                                <small class="text-muted">* Serviço adicional cobrado uma vez na reserva</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-4">
+                            <a class="btn btn-gold w-100 btn-lg" asp-action="Reservar" asp-route-pacote="@pacote.NomePacote">
+                                <i class="bi bi-calendar-plus"></i> Reservar Este Pacote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    
+    <div class="alert alert-info mt-5">
+        <h5><i class="bi bi-lightbulb"></i> Sobre os Pacotes</h5>
+        <p class="mb-0">
+            Nossos pacotes utilizam o padrão <strong>Abstract Factory</strong> para criar combinações 
+            coesas de quarto, café da manhã e serviços adicionais. Cada pacote é montado com produtos 
+            que combinam entre si, garantindo uma experiência completa e harmoniosa.
+        </p>
+    </div>
+</div>

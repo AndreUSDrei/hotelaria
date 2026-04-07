@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Plaza Hotels</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #c9a227;
+            --accent-color: #2d5a87;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+        .navbar-brand i {
+            color: var(--secondary-color);
+        }
+        .nav-link:hover {
+            color: var(--secondary-color) !important;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--secondary-color), #d4af37);
+            border: none;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #d4af37, var(--secondary-color));
+            color: #1a1a1a;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 40px;
+        }
+        .card-quarto {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .card-quarto:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .card-quarto .card-header {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        .badge-luxo {
+            background: var(--secondary-color);
+            color: #1a1a1a;
+        }
+        .comodidade-tag {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            margin: 3px;
+            display: inline-block;
+        }
+        footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-top: 60px;
+        }
+        footer a {
+            color: var(--secondary-color);
+        }
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pendente { background: #fff3cd; color: #856404; }
+        .status-confirmada { background: #cce5ff; color: #004085; }
+        .status-checkin { background: #d4edda; color: #155724; }
+        .status-checkout { background: #d1ecf1; color: #0c5460; }
+        .status-cancelada { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-building"></i> Plaza Hotels
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door"></i> Início
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Quartos">
+                                <i class="bi bi-door-open"></i> Quartos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Pacotes">
+                                <i class="bi bi-gift"></i> Pacotes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Disponibilidade">
+                                <i class="bi bi-calendar-check"></i> Disponibilidade
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <a class="btn btn-gold" asp-controller="Home" asp-action="Reservar">
+                            <i class="bi bi-bookmark-plus"></i> Reservar Agora
+                        </a>
+                    </div>
+                    <ul class="navbar-nav ms-3">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-gear"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Reservas">
+                                    <i class="bi bi-list-check"></i> Reservas
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Historico">
+                                    <i class="bi bi-clock-history"></i> Histórico
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                @* <li><a class="dropdown-item" asp-controller="Api" asp-action="GetQuartos">
+                                    <i class="bi bi-code-slash"></i> API
+                                </a></li> *@
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main role="main">
+        @RenderBody()
+    </main>
+    <footer class="text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5><i class="bi bi-building"></i> Plaza Hotels</h5>
+                    <p class="small">Sistema de gerenciamento de reservas com padrões de projeto.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Padrões Implementados</h5>
+                    <p class="small">Singleton | Abstract Factory | Factory Method</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Contato</h5>
+                    <p class="small">
+                        <i class="bi bi-telephone"></i> (11) 9999-9999<br>
+                        <i class="bi bi-envelope"></i> contato@plazahotels.com
+                    </p>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.2)">
+            <p class="mb-0">&copy; 2026 Plaza Hotels - Projeto de Padrões de Projeto</p>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
